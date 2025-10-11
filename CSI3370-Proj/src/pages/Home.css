@@ -1,0 +1,25 @@
+.home {
+  padding: 20px;
+}
+
+.music-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.music-card {
+  background-color: #222;
+  color: white;
+  padding: 150px;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.music-card:hover {
+  background-color: #1d97b9;
+  transform: scale(1.05);
+}

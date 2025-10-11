@@ -1,0 +1,39 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #191414;
+  color: #fff;
+  padding: 15px 30px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100vw; /* Full viewport width */
+  left: 0;
+  margin: 0;
+  border-radius: 10px; /* remove rounded corners */
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1d88b9; /* Spotify green accent */
+}
+
+.nav a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 20px;
+  font-weight: 500;
+}
+
+.nav a:hover {
+  color: #1d7db9;
+}
+
+/* Apply these globally */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}

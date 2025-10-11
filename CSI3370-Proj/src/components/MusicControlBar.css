@@ -1,0 +1,38 @@
+.control-bar {
+  position: fixed;
+  bottom: 45px;
+  left: 750px;
+  height: 60px;
+  background-color: #282828;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  color: white;
+  z-index: 200;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
+  border-radius: 30px;
+  padding: 30px;
+}
+
+.music-controls:hover {
+  background-color: #1f1f1f;
+  box-shadow: 0 0 20px rgba(29, 136, 185, 0.6);
+}
+
+/* Buttons */
+.music-controls button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.2s ease;
+}
+
+/* hover effects on buttons */
+.music-controls button:hover {
+  color: #1d88b9;
+  text-shadow: 0 0 8px #1d88b9;
+  transform: scale(1.15);
+}
