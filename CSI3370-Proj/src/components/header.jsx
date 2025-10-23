@@ -1,18 +1,44 @@
-import React from 'react';
-import './header.css';
+// src/components/Header.jsx
+import React, { useState } from "react";
+import "./header.css";
+import SideMenu from "./SideMenu";
+import { Link } from "react-router-dom";
+import { getSpotifyAuthUrl } from "../spotify"; // import your Spotify auth helper
 
-function Header () {
-    return(
-        <header className='header'>
-            <h1 className="logo">SoundSpace</h1>
-            <nav className="nav">
-                <a href="#">Home</a>
-                <a href="#">Library</a>
-                <a href="#">Search</a>
-                <a href="#">SharePlay</a>
-            </nav>
-        </header>
-    );
+function Header({ token }) {
+  const [menuOpen, setMenuOpen] = useState(false);
 
+  return (
+    <>
+      <header className="header">
+        {/* Hamburger menu */}
+        <div className="menu-icon" onClick={() => setMenuOpen(true)}>
+          ☰
+        </div>
+
+        {/* Logo */}
+        <h1 className="logo">SoundSpace</h1>
+
+        {/* Navigation links */}
+        <nav className="nav">
+          <Link to="/">Home</Link>
+          <Link to="/library">Library</Link>
+          <Link to="/search">Search</Link>
+          <Link to="/shareplay">SharePlay</Link>
+
+          {/* Show Spotify login button only if no token */}
+          {!token && (
+            <a href={getSpotifyAuthUrl()} className="login-btn">
+              Login with Spotify
+            </a>
+          )}
+        </nav>
+      </header>
+
+      {/* Side menu component */}
+      <SideMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+    </>
+  );
 }
-export default Header
+
+export default Header;

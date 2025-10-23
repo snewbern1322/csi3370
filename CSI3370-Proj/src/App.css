@@ -9,3 +9,10 @@
   padding: 20px;
   margin-bottom: 60px; /* space for control bar */
 }
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* ✅ removes bottom scrollbar */
+  background-color: #121212; /* matches your dark theme */
+}

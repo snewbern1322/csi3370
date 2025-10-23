@@ -1,0 +1,71 @@
+.shareplay-page {
+  padding: 20px;
+}
+
+.session-info {
+  margin-bottom: 20px;
+}
+
+.now-playing {
+  margin-bottom: 20px;
+}
+
+.participants {
+  margin-bottom: 20px;
+}
+
+.participants ul {
+  list-style: none;
+  padding: 0;
+}
+
+.participants li {
+  background-color: #2e2e2e;
+  color: white;
+  padding: 5px 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+}
+
+.comments-section {
+  margin-top: 20px;
+}
+
+.comments-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+.comment {
+  background-color: #1e1e1e;
+  color: white;
+  padding: 5px 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+}
+
+.comment-form {
+  display: flex;
+  gap: 10px;
+}
+
+.comment-form input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.comment-form button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+}
+
+.comment-form button:hover {
+  background-color: #45a049;
+}

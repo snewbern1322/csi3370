@@ -1,0 +1,45 @@
+.library-page {
+  padding: 20px;
+}
+
+.playlists {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.playlist-card {
+  background-color: #1e1e1e;
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.playlist-info h2 {
+  margin: 0 0 5px 0;
+  font-size: 18px;
+}
+
+.playlist-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #bbb;
+}
+
+.play-button {
+  margin-top: 10px;
+  padding: 8px;
+  border: none;
+  border-radius: 5px;
+  background-color: #ff4c4c;
+  color: white;
+  cursor: pointer;
+}
+
+.play-button:hover {
+  background-color: #ff1f1f;
+}
