@@ -8,53 +8,67 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  width: 100vw; /* Full viewport width */
+  width: 100vw;
   left: 0;
-  margin: 0;
-  border-radius: 10px; /* remove rounded corners */
 }
 
 .logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #1d88b9; /* Spotify green accent */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #1d78b9;
+  text-shadow: 0 0 10px rgba(29, 104, 185, 0.6);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .nav a {
   color: #fff;
   text-decoration: none;
-  margin-left: 20px;
   font-weight: 500;
+  transition: 0.3s ease;
 }
 
 .nav a:hover {
-  color: #1d7db9;
-}
-
-/* Apply these globally */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  color: #037dff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
 }
 
 .menu-icon {
   font-size: 1.8rem;
   cursor: pointer;
-  margin-right: 15px;
   color: white;
 }
 
-.login-btn {
-  margin-left: 20px;
-  padding: 5px 10px;
-  background-color: #1db954;
-  color: white;
-  text-decoration: none;
+/* Login & Logout buttons */
+.login-btn,
+.logout-btn {
+  background-color: #1d88b9;
+  border: none;
   border-radius: 20px;
-  font-weight: bold;
+  padding: 6px 14px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-.login-btn:hover {
-  background-color: #1ed760;
+.login-btn:hover,
+.logout-btn:hover {
+  background-color: #1ea6d7;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+/* Reset global defaults */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }

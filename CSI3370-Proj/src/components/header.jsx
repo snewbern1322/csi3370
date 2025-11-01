@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import "./header.css";
 import SideMenu from "./SideMenu";
 import { Link } from "react-router-dom";
-import { getSpotifyAuthUrl } from "../spotify"; // import your Spotify auth helper
 
 function Header({ token }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -26,11 +25,13 @@ function Header({ token }) {
           <Link to="/search">Search</Link>
           <Link to="/shareplay">SharePlay</Link>
 
-          {/* Show Spotify login button only if no token */}
-          {!token && (
-            <a href={getSpotifyAuthUrl()} className="login-btn">
-              Login with Spotify
-            </a>
+          {/* Replace Spotify login with your custom login page */}
+          {!token ? (
+            <Link to="/login" className="login-btn">
+              Login
+            </Link>
+          ) : (
+            <button className="logout-btn">Logout</button>
           )}
         </nav>
       </header>
