@@ -1,5 +1,6 @@
-// src/pages/Login.jsx
 import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
 const Login = () => {
@@ -10,47 +11,89 @@ const Login = () => {
     password: "",
   });
 
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [message, setMessage] = useState(""); // for visual feedback
+
+  const navigate = useNavigate(); // for redirecting
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("User Login Data:", formData);
-    // Later: Send this data to your MySQL backend via API
+
+    const url = isRegistering
+      ? "http://localhost:5000/api/users/register"
+      : "http://localhost:5000/api/users/login";
+
+    const data = isRegistering
+      ? formData
+      : { username: formData.username, password: formData.password };
+
+    try {
+      const response = await axios.post(url, data);
+      setMessage(response.data.message); // show message on page
+
+      if (isRegistering) {
+        // After account creation, wait 2 seconds, then redirect to home
+        setTimeout(() => {
+          setIsRegistering(false);
+          setFormData({ firstName: "", lastName: "", username: "", password: "" });
+          setMessage(""); // clear message
+          navigate("/"); // redirect to home
+        }, 2000);
+      } else {
+        // For login, you can handle storing user/session here
+        console.log("Logged in user:", response.data.user);
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage(err.response?.data?.message || "Something went wrong");
+    }
   };
 
   return (
     <div className="login-page">
       <div className="login-container">
-        <h1>Welcome Back</h1>
-        <p className="subtitle">Log in to access your music world</p>
+        <h1>{isRegistering ? "Create Account" : "Welcome Back"}</h1>
+        <p className="subtitle">
+          {isRegistering
+            ? "Fill in your details to create an account"
+            : "Log in to access your music world"}
+        </p>
+
+        {message && <div className="message-box">{message}</div>}
 
         <form onSubmit={handleSubmit} className="login-form">
-          <div className="input-group">
-            <label>First Name</label>
-            <input
-              type="text"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              required
-              placeholder="Enter your first name"
-            />
-          </div>
+          {isRegistering && (
+            <>
+              <div className="input-group">
+                <label>First Name</label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter your first name"
+                />
+              </div>
 
-          <div className="input-group">
-            <label>Last Name</label>
-            <input
-              type="text"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              required
-              placeholder="Enter your last name"
-            />
-          </div>
+              <div className="input-group">
+                <label>Last Name</label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter your last name"
+                />
+              </div>
+            </>
+          )}
 
           <div className="input-group">
             <label>Username</label>
@@ -60,7 +103,7 @@ const Login = () => {
               value={formData.username}
               onChange={handleChange}
               required
-              placeholder="Choose a username"
+              placeholder="Enter your username"
             />
           </div>
 
@@ -77,7 +120,7 @@ const Login = () => {
           </div>
 
           <button type="submit" className="login-button">
-            Log In
+            {isRegistering ? "Create Account" : "Log In"}
           </button>
 
           <div className="divider">
@@ -87,9 +130,9 @@ const Login = () => {
           <button
             type="button"
             className="create-account-button"
-            onClick={() => console.log("Redirect to create account")}
+            onClick={() => setIsRegistering(!isRegistering)}
           >
-            Create Account
+            {isRegistering ? "Back to Login" : "Create Account"}
           </button>
         </form>
       </div>

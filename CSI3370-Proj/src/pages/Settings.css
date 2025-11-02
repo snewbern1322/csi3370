@@ -1,0 +1,71 @@
+.settings-page {
+  padding: 40px;
+  color: var(--text-light);
+  background-color: var(--dark-bg);
+  min-height: 100vh;
+}
+
+.settings-page h1 {
+  color: var(--accent-color);
+  text-shadow: 0 0 10px rgba(29, 136, 185, 0.5);
+  margin-bottom: 30px;
+}
+
+.settings-section {
+  background-color: var(--light-bg);
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 25px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+}
+
+.settings-section h2 {
+  color: var(--accent-color);
+  margin-bottom: 20px;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.setting-item label {
+  font-size: 1rem;
+}
+
+.setting-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent-color);
+  cursor: pointer;
+}
+
+.settings-btn {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: var(--accent-color);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.settings-btn:hover {
+  background-color: var(--accent-hover);
+  box-shadow: 0 0 12px rgba(29, 136, 185, 0.5);
+}
+
+.settings-btn.danger {
+  background-color: #b91d1d;
+}
+
+.settings-btn.danger:hover {
+  background-color: #d32525;
+  box-shadow: 0 0 10px rgba(185, 29, 29, 0.5);
+}
