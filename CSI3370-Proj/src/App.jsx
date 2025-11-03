@@ -11,27 +11,17 @@ import Account from "./pages/Account";
 import Settings from "./pages/Settings";
 import "./App.css";
 
-import { useEffect, useState } from "react";
-import { getTokenFromUrl } from "./spotify";
+import { useContext } from "react";
+import { UserContext } from "./UserContext";
 
 function App() {
-  const [token, setToken] = useState(null);
-
-  useEffect(() => {
-    const hash = getTokenFromUrl();
-    window.location.hash = "";
-
-    const _token = hash.access_token;
-    if (_token) {
-      setToken(_token);
-    }
-  }, []);
+  const { user } = useContext(UserContext); // ✅ get current user
 
   return (
     <Router>
       <div className="app">
         {/* Header */}
-        <Header token={token} />
+        <Header user={user} />
 
         {/* Page content */}
         <main className="content">
@@ -43,22 +33,15 @@ function App() {
             <Route path="/shareplay" element={<SharePlay />} />
 
             {/* Protected routes */}
-            <Route
-              path="/account"
-              element={token ? <Account /> : <Navigate to="/login" replace />}
-            />
-            <Route
-              path="/settings"
-              element={token ? <Settings /> : <Navigate to="/login" replace />}
-            />
+            <Route path="/account" element={user ? <Account /> : <Navigate to="/login" replace />} />
+            <Route path="/settings" element={user ? <Settings /> : <Navigate to="/login" replace />} />
 
-            {/* Catch-all redirect */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
 
         {/* Music control bar */}
-        {token && <MusicControlBar />}
+        {user && <MusicControlBar />}
 
         {/* Footer */}
         <Footer />

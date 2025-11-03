@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
+import { UserContext } from "../UserContext";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -10,11 +11,11 @@ const Login = () => {
     username: "",
     password: "",
   });
-
   const [isRegistering, setIsRegistering] = useState(false);
-  const [message, setMessage] = useState(""); // for visual feedback
+  const [message, setMessage] = useState("");
 
-  const navigate = useNavigate(); // for redirecting
+  const navigate = useNavigate();
+  const { login } = useContext(UserContext); // ✅ use login from context
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,19 +35,19 @@ const Login = () => {
 
     try {
       const response = await axios.post(url, data);
-      setMessage(response.data.message); // show message on page
+      setMessage(response.data.message);
 
       if (isRegistering) {
-        // After account creation, wait 2 seconds, then redirect to home
         setTimeout(() => {
           setIsRegistering(false);
           setFormData({ firstName: "", lastName: "", username: "", password: "" });
-          setMessage(""); // clear message
-          navigate("/"); // redirect to home
+          setMessage("");
+          navigate("/");
         }, 2000);
       } else {
-        // For login, you can handle storing user/session here
-        console.log("Logged in user:", response.data.user);
+        // ✅ Login user
+        login(response.data.user);
+        navigate("/"); // redirect to home
       }
     } catch (err) {
       console.error(err);
@@ -80,7 +81,6 @@ const Login = () => {
                   placeholder="Enter your first name"
                 />
               </div>
-
               <div className="input-group">
                 <label>Last Name</label>
                 <input
@@ -136,7 +136,6 @@ const Login = () => {
           </button>
         </form>
       </div>
-
       <footer className="footer-space"></footer>
     </div>
   );
