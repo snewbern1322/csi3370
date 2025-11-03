@@ -1,3 +1,4 @@
+// src/components/Header.jsx
 import React, { useState, useContext } from "react";
 import "./header.css";
 import SideMenu from "./SideMenu";
@@ -11,14 +12,21 @@ function Header() {
 
   const handleLogout = () => {
     logout();
-    navigate("/"); // redirect to home after logout
+    navigate("/login"); // redirect to login after logout
   };
 
   return (
     <>
       <header className="header">
-        <div className="menu-icon" onClick={() => setMenuOpen(true)}>☰</div>
+        {/* Hamburger menu */}
+        <div className="menu-icon" onClick={() => setMenuOpen(true)}>
+          ☰
+        </div>
+
+        {/* Logo */}
         <h1 className="logo">SoundSpace</h1>
+
+        {/* Navigation links */}
         <nav className="nav">
           <Link to="/">Home</Link>
           <Link to="/library">Library</Link>
@@ -26,13 +34,18 @@ function Header() {
           <Link to="/shareplay">SharePlay</Link>
 
           {!user ? (
-            <Link to="/login" className="login-btn">Login</Link>
+            <Link to="/login" className="login-btn">
+              Login
+            </Link>
           ) : (
-            <button className="logout-btn" onClick={handleLogout}>Logout</button>
+            <button className="logout-btn" onClick={handleLogout}>
+              Logout
+            </button>
           )}
         </nav>
       </header>
 
+      {/* Side menu component */}
       <SideMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
     </>
   );
