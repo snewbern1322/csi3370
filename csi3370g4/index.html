@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Music Player</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="account">Account</div>
+        <div class="search">
+            <input type="text" placeholder="Search Title">
+            <button>Tags</button>
+        </div>
+    </header>
+
+    <main>
+        <aside class="tags">
+            <h2>Explore Tags</h2>
+            <ul>
+                <li>Tag 1</li>
+                <li>Tag 2</li>
+                <li>Tag 3</li>
+            </ul>
+        </aside>
+
+        <section class="song-list">
+            <h2>Songs From Tags</h2>
+            <ul>
+                <li>Song 1</li>
+                <li>Song 2</li>
+                <li>Song 3</li>
+            </ul>
+        </section>
+
+        <aside class="current-song">
+            <div class="song-info">
+                <h3>Song</h3>
+                <p>Tags</p>
+            </div>
+            <div class="cover">Cover</div>
+        </aside>
+    </main>
+
+    <footer>
+        <div class="audio-control">
+            <input type="range" min="0" max="100" value="0">
+            <button>Play/Pause</button>
+        </div>
+    </footer>
+</body>
+</html>
