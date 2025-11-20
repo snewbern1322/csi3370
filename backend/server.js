@@ -1,16 +1,21 @@
+// backend/server.js
 import express from "express";
 import cors from "cors";
-import mysql from "mysql2";
 import dotenv from "dotenv";
-import userRoutes from "./routes/users.js";
 import db from "./db.js";
+import userRoutes from "./routes/users.js";
+import songsRoute from "./routes/songs.js";
+import artistsRoute from "./routes/artists.js";
+
 
 dotenv.config();
 const app = express();
+
+// ----- Middleware -----
 app.use(cors());
 app.use(express.json());
 
-// ✅ Test connection
+// ----- Test DB connection -----
 db.connect((err) => {
   if (err) {
     console.error("Database connection failed:", err);
@@ -19,21 +24,24 @@ db.connect((err) => {
   }
 });
 
-// ----- Pass db to user routes via middleware -----
+// ----- Pass db to routes if needed -----
 app.use((req, res, next) => {
-  req.db = db; // attach db to request
+  req.db = db;
   next();
 });
 
-// ✅ Use user routes
+// ----- Routes -----
 app.use("/api/users", userRoutes);
+app.use("/api/songs", songsRoute);
+app.use("/api/artists", artistsRoute);
 
-// ✅ Example route to test
+// ----- Test route -----
 app.get("/", (req, res) => {
   res.send("Backend is running!");
 });
 
-// ✅ Start the server
-app.listen(process.env.PORT, () => {
-  console.log(`Server running on http://localhost:${process.env.PORT}`);
+// ----- Start server -----
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
