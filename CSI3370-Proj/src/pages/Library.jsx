@@ -39,6 +39,7 @@ const Library = () => {
   const [newAlbum, setNewAlbum] = useState(""); // temporary album input
   const [newDuration, setNewDuration] = useState(""); // temporary duration input
   const [newGenre, setNewGenre] = useState(""); // temporary genre input
+  const [viewingSong, SetViewingSong] = useState(null); //rerenders page when you want to view
 
   // -------------------------------
   // Fetch songs from backend
@@ -137,6 +138,13 @@ const Library = () => {
       });
   };
 
+  //View Song Details
+  const handleViewSong = song => {
+    SetViewingSong(song);
+  }
+
+
+
   // -------------------------------
   // Render JSX
   // -------------------------------
@@ -202,6 +210,7 @@ const Library = () => {
                 ) : (
                   <>
                     {song.title} — <em>{song.artist}</em>
+                    <button onClick={() => handleViewSong(song)}>Details</button>
                     <button onClick={() => handleEditSong(song)}>Edit</button>
                     <button onClick={() => handleDeleteSong(song.id)}>Delete</button>
                   </>
@@ -224,7 +233,17 @@ const Library = () => {
 
         {!loadingSongs && !songError && songs.length === 0 && <p>No songs found in the database.</p>}
       </section>
-
+        
+  {viewingSong && ( //if viewing song is !null show:
+  <div className="song-details-modal">
+    <h3>{viewingSong.title}</h3>
+    <p>Artist: {viewingSong.artist}</p>
+    <p>Album: {viewingSong.album}</p>
+    <p>Genre: {viewingSong.genre}</p>
+    <p>Duration: {viewingSong.duration}</p>
+    <button onClick={() => SetViewingSong(null)}>Close</button>
+  </div>
+)}
       {/* Recently played section */}
       <section className="recently-played">
         <h2>Recently Played</h2>
