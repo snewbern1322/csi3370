@@ -6,6 +6,7 @@ import db from "./db.js";
 import userRoutes from "./routes/users.js";
 import songsRoute from "./routes/songs.js";
 import artistsRoute from "./routes/artists.js";
+import tagsRoute from "./routes/tags.js";
 
 
 dotenv.config();
@@ -34,6 +35,8 @@ app.use((req, res, next) => {
 app.use("/api/users", userRoutes);
 app.use("/api/songs", songsRoute);
 app.use("/api/artists", artistsRoute);
+app.use("/api/tags", tagsRoute);
+
 
 // ----- Test route -----
 app.get("/", (req, res) => {

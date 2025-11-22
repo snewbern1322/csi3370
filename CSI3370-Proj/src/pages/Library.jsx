@@ -39,7 +39,10 @@ const Library = () => {
   const [newAlbum, setNewAlbum] = useState(""); // temporary album input
   const [newDuration, setNewDuration] = useState(""); // temporary duration input
   const [newGenre, setNewGenre] = useState(""); // temporary genre input
-  const [viewingSong, SetViewingSong] = useState(null); //rerenders page when you want to view
+  const [viewingSong, SetViewingSong] = useState(null); // rerenders page when you want to view
+  const [tags, setTags] = useState([]);       // All tags from backend
+  const [selectedTags, setSelectedTags] = useState([]); // Tags selected for the song
+  const [newTag, setNewTag] = useState("");   // New tag to create
 
   // -------------------------------
   // Fetch songs from backend
@@ -65,6 +68,16 @@ const Library = () => {
     fetchSongs(); // fetch songs on mount
   }, []);
 
+  // ---------------
+  // Fetch Tags
+  // ---------------
+  useEffect(() => {
+    fetch("http://localhost:5000/api/tags")
+      .then((res) => res.json())
+      .then(setTags)
+      .catch((err) => console.error("Failed to fetch tags:", err));
+  }, []);
+
   // -------------------------------
   // Handlers for song CRUD
   // -------------------------------
@@ -77,6 +90,15 @@ const Library = () => {
     setNewAlbum(song.album || "");
     setNewDuration(song.duration || "");
     setNewGenre(song.genre || "");
+
+    // Open modal so tags are visible
+    SetViewingSong(song);
+
+    // fetch tags for this song
+    fetch(`http://localhost:5000/api/songs/${song.id}/tags`)
+      .then((res) => res.json())
+      .then((data) => setSelectedTags(data.map(tag => tag.id)))
+      .catch((err) => setSelectedTags([]));
   };
 
   // Cancel editing
@@ -138,11 +160,72 @@ const Library = () => {
       });
   };
 
-  //View Song Details
-  const handleViewSong = song => {
+  // View Song Details
+  const handleViewSong = async (song) => {
     SetViewingSong(song);
-  }
 
+    try {
+      // fetch tags for this song
+      const res = await fetch(`http://localhost:5000/api/songs/${song.id}/tags`);
+      const data = await res.json();
+      setSelectedTags(data.map(tag => tag.id)); // set selected tags for the modal
+    } catch (err) {
+      console.error("Failed to fetch song tags:", err);
+      setSelectedTags([]);
+    }
+  };
+
+  // Handle Add new Tag
+  const handleAddTag = async () => {
+    if (!newTag.trim()) return;
+
+    try {
+      const res = await fetch("http://localhost:5000/api/tags", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newTag }),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Error adding tag:", errorData.error);
+        return;
+      }
+      const created = await res.json();
+      setTags([...tags, created]);
+      setSelectedTags([...selectedTags, created.id]);
+      setNewTag("");
+    } catch (err) {
+      console.error("Failed to add tag:", err);
+    }
+  };
+
+  const handleSaveSongTags = async () => {
+  if (!viewingSong) return;
+
+  try {
+    // Use the backend route for updating tags
+    const res = await fetch(`http://localhost:5000/api/tags/song/${viewingSong.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tagIds: selectedTags }) // send multiple tag IDs
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      console.error("Failed to update song tags:", errorData.error);
+      return;
+    }
+
+    alert("Tags updated!");
+
+    // Refresh tags for this song to display them correctly
+    const tagsRes = await fetch(`http://localhost:5000/api/tags/song/${viewingSong.id}`);
+    const updatedTags = await tagsRes.json();
+    setSelectedTags(updatedTags.map(tag => tag.id));
+  } catch (err) {
+    console.error("Failed to update song tags:", err);
+  }
+};
 
 
   // -------------------------------
@@ -233,17 +316,73 @@ const Library = () => {
 
         {!loadingSongs && !songError && songs.length === 0 && <p>No songs found in the database.</p>}
       </section>
-        
-  {viewingSong && ( //if viewing song is !null show:
-  <div className="song-details-modal">
-    <h3>{viewingSong.title}</h3>
-    <p>Artist: {viewingSong.artist}</p>
-    <p>Album: {viewingSong.album}</p>
-    <p>Genre: {viewingSong.genre}</p>
-    <p>Duration: {viewingSong.duration}</p>
-    <button onClick={() => SetViewingSong(null)}>Close</button>
-  </div>
-)}
+
+      {/* Song Details Modal */}
+      {viewingSong && (
+        <div className="song-details-modal">
+          <h3>{viewingSong.title}</h3>
+          <p>Artist: {viewingSong.artist}</p>
+          <p>Album: {viewingSong.album}</p>
+          <p>Genre: {viewingSong.genre}</p>
+          <p>Duration: {viewingSong.duration}</p>
+
+          {/* Tags always visible under details */}
+          <div className="song-tags-section">
+            <h4>Tags</h4>
+
+            {/* Display tags currently applied to the song */}
+            {selectedTags.length > 0 ? (
+              <ul className="current-song-tags">
+                {tags
+                  .filter(tag => selectedTags.includes(tag.id))
+                  .map(tag => (
+                    <li key={tag.id}>{tag.name}</li>
+                  ))}
+              </ul>
+            ) : (
+              <p>No tags applied yet.</p>
+            )}
+
+            {/* Editable section only when editing */}
+            {editingSongId === viewingSong.id && (
+              <>
+                {/* Select existing tags */}
+                <label>
+                  Select tags:
+                  <select
+                    multiple
+                    value={selectedTags}
+                    onChange={(e) => {
+                      const options = Array.from(e.target.selectedOptions);
+                      setSelectedTags(options.map(opt => Number(opt.value)));
+                    }}
+                  >
+                    {tags.map(tag => (
+                      <option key={tag.id} value={tag.id}>{tag.name}</option>
+                    ))}
+                  </select>
+                </label>
+
+                {/* Add new tag */}
+                <div className="add-new-tag">
+                  <input
+                    type="text"
+                    value={newTag}
+                    onChange={(e) => setNewTag(e.target.value)}
+                    placeholder="Add new tag"
+                  />
+                  <button onClick={handleAddTag}>Add Tag</button>
+                </div>
+
+                <button onClick={handleSaveSongTags}>Save Tags</button>
+              </>
+            )}
+          </div>
+
+          <button onClick={() => SetViewingSong(null)}>Close</button>
+        </div>
+      )}
+
       {/* Recently played section */}
       <section className="recently-played">
         <h2>Recently Played</h2>

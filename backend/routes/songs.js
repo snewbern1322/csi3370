@@ -136,4 +136,59 @@ router.post("/", (req, res) => {
   });
 });
 
+
+//---------------
+//Add Tags
+//---------------
+router.post("/:songId/tags", (req, res) => {
+  const { songId } = req.params;
+  const { tagIds } = req.body; // array of tag IDs
+
+  // Remove old tags, has to remove old ones to update it
+  db.query(
+    "DELETE FROM song_tags WHERE song_id = ?",
+    [songId],
+    (err) => {
+      if (err) return res.status(500).json({ error: "Failed to clear old tags" });
+
+      if (!tagIds || tagIds.length === 0) {
+        return res.json({ message: "Tags updated (cleared)", songId });
+      }
+
+      const values = tagIds.map(tid => [songId, tid]);
+
+      db.query(
+        "INSERT INTO song_tags (song_id, tag_id) VALUES ?",
+        [values],
+        (err2) => {
+          if (err2) return res.status(500).json({ error: "Failed to apply tags" });
+
+          res.json({ message: "Tags updated", songId });
+        }
+      );
+    }
+  );
+});
+
+
+//----------------------
+//Fetch Tags on a Song
+//----------------------
+
+router.get("/:songId/tags", (req, res) => {
+  db.query(
+    `
+    SELECT t.id, t.name
+    FROM tags t
+    JOIN song_tags st ON t.id = st.tag_id
+    WHERE st.song_id = ?
+    `,
+    [req.params.songId],
+    (err, rows) => {
+      if (err) return res.status(500).json({ error: "Failed to fetch tags" });
+      res.json(rows);
+    }
+  );
+});
+
 export default router;   // Export the router to be used in server.js
