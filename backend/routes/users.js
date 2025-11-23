@@ -1,73 +1,99 @@
-// backend/routes/users.js
 import express from "express";
-import bcrypt from "bcrypt";
 import db from "../db.js";
 
 const router = express.Router();
 
-// ✅ Register a new user
-router.post("/register", async (req, res) => {
-  const { firstName, lastName, username, password } = req.body;
-
-  // Basic validation
-  if (!firstName || !lastName || !username || !password) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-
-  try {
-    // Check if username already exists
-    const [existing] = await db
-      .promise()
-      .query("SELECT * FROM users WHERE username = ?", [username]);
-
-    if (existing.length > 0) {
-      return res.status(400).json({ message: "Username already exists" });
-    }
-
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Insert new user into database
-    await db
-      .promise()
-      .query(
-        "INSERT INTO users (first_name, last_name, username, password) VALUES (?, ?, ?, ?)",
-        [firstName, lastName, username, hashedPassword]
-      );
-
-    res.status(201).json({ message: "Account created successfully!" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
+// ----------------------------------------------------
+// GET all users
+// ----------------------------------------------------
+router.get("/", (req, res) => {
+  db.query("SELECT * FROM users ORDER BY username ASC", (err, rows) => { //data
+    if (err) return res.status(500).json({ error: "Failed to fetch users" });
+    res.json(rows);
+  });
 });
 
-// ✅ Login user
-router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
+// ----------------------------------------------------
+// CREATE user
+// ----------------------------------------------------
+router.post("/", (req, res) => {
+  const { username, email, user_type } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({ message: "Username and password required" });
-  }
+  if (!username || !email)
+    return res.status(400).json({ error: "Username and email are required" });
+
+  if (!["standard", "premium"].includes(user_type))
+    return res.status(400).json({ error: "Invalid user_type" });
+
+  db.query(
+    "INSERT INTO users (username, email, user_type) VALUES (?, ?, ?)",
+    [username, email, user_type],
+    (err, result) => {
+      if (err) {
+        if (err.code === "ER_DUP_ENTRY")
+          return res.status(400).json({ error: "Username or email already exists" });
+
+        return res.status(500).json({ error: "Failed to create user" });
+      }
+
+      res.json({
+        user_id: result.insertId,
+        username,
+        email,
+        user_type,
+      });
+    }
+  );
+});
+
+
+// ----------------------------------------------------
+// UPDATE user
+// ----------------------------------------------------
+router.put("/:id", (req, res) => {
+  const { username, email, user_type } = req.body;
+
+  if (user_type && !["standard", "premium"].includes(user_type))
+    return res.status(400).json({ error: "Invalid user_type" });
+
+  db.query(
+    "UPDATE users SET username = ?, email = ?, user_type = ? WHERE user_id = ?",
+    [username, email, user_type, req.params.id],
+    (err) => {
+      if (err) return res.status(500).json({ error: "Failed to update user" });
+      res.json({ message: "User updated" });
+    }
+  );
+});
+
+// ----------------------------------------------------
+// DELETE user
+// ----------------------------------------------------
+router.delete("/:id", (req, res) => {
+  db.query("DELETE FROM users WHERE user_id = ?", [req.params.id], (err) => {
+    if (err) return res.status(500).json({ error: "Failed to delete user" });
+    res.json({ message: "User deleted" });
+  });
+});
+
+// ----------------------------------------------------
+// MOCK LOGIN
+// ----------------------------------------------------
+router.post("/login", async (req, res) => {
+  const { user_id } = req.body;
+
+  if (!user_id)
+    return res.status(400).json({ message: "user_id is required" });
 
   try {
     const [rows] = await db
       .promise()
-      .query("SELECT * FROM users WHERE username = ?", [username]);
+      .query("SELECT * FROM users WHERE user_id = ?", [user_id]);
 
-    if (rows.length === 0) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+    if (rows.length === 0)
+      return res.status(404).json({ message: "User not found" });
 
-    const user = rows[0];
-    const match = await bcrypt.compare(password, user.password);
-
-    if (!match) return res.status(401).json({ message: "Invalid credentials" });
-
-    // Optionally remove password before sending response
-    delete user.password;
-
-    res.status(200).json({ message: "Login successful", user });
+    res.json({ message: "Logged in", user: rows[0] });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });

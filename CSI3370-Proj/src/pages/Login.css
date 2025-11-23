@@ -74,6 +74,7 @@
   color: white;
   cursor: pointer;
   transition: 0.2s;
+  margin-top: 10px;
 }
 
 .login-button:hover {
@@ -123,7 +124,38 @@
   text-align: center;
   font-weight: bold;
   animation: fadeInOut 3s forwards;
+  
 }
+
+.user-actions {
+  display: flex;
+  gap: 1rem; /* spacing between buttons */
+  margin-top: 1rem;
+  justify-content: center; /* center horizontally */
+  align-items: center; /* center vertically */
+}
+
+
+.action-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #4caf50; /* green for edit/view */
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.action-button:hover {
+  background-color: #45a049; /* darker green on hover */
+  transform: scale(1.05); /* subtle zoom effect */
+}
+
+.action-button:active {
+  transform: scale(0.95); /* button press feedback */
+}
+
 
 @keyframes fadeInOut {
   0% { opacity: 0; }

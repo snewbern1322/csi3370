@@ -36,7 +36,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/songs", songsRoute);
 app.use("/api/artists", artistsRoute);
 app.use("/api/tags", tagsRoute);
-
+app.use("/api/users", userRoutes);
 
 // ----- Test route -----
 app.get("/", (req, res) => {
