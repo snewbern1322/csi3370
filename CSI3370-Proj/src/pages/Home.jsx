@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
 import "./Home.css";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../UserContext";
 
 function Home() {
   const [featured, setFeatured] = useState([]);
   const [moods, setMoods] = useState([]);
   const [sessions, setSessions] = useState([]);
+
+
+  const { user } = useContext(UserContext); // get logged-in user
+  const navigate = useNavigate(); // for redirect
 
   // Mock data — replace with API calls later
   useEffect(() => {
@@ -66,7 +73,22 @@ function Home() {
               <li key={i} className="session-card">
                 <strong>{s.title}</strong>
                 <span>{s.users} listeners</span>
-                <button>Join</button>
+                <button
+                  onClick={() => {
+                  if (!user) {
+                    alert("You must log in to join the live session.");
+                    navigate("/login");
+                    return;
+                  }
+                  if (user.user_type !== "premium") {
+                    alert("Premium account required to join live play.");
+                    return;
+                  }
+                  // redirect to SharePlay
+                  navigate("/shareplay");
+                  }}
+                  >Join</button>
+
               </li>
             ))}
           </ul>
