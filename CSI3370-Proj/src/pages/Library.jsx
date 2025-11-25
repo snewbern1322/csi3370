@@ -43,6 +43,8 @@ const Library = () => {
   const [tags, setTags] = useState([]);       // All tags from backend
   const [selectedTags, setSelectedTags] = useState([]); // Tags selected for the song
   const [newTag, setNewTag] = useState("");   // New tag to create
+  const [editingTagId, setEditingTagId] = useState(null); // which tag is being edited
+  const [editingTagName, setEditingTagName] = useState(""); // temporary input for tag name
 
   // -------------------------------
   // Fetch songs from backend
@@ -227,6 +229,43 @@ const Library = () => {
   }
 };
 
+  const startEditTag = (tag) => {
+  setEditingTagId(tag.id);
+  setEditingTagName(tag.name);
+};
+
+const saveEditTag = async (tagId) => {
+  if (!editingTagName.trim()) return alert("Tag name cannot be empty");
+
+  try {
+    const res = await fetch(`http://localhost:5000/api/songs/${viewingSong.id}/tags/${tagId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: editingTagName }),
+    });
+
+    if (!res.ok) throw new Error("Failed to update tag");
+
+    const data = await res.json();
+
+    // Update local selectedTags + tags state
+    setSelectedTags((prev) =>
+      prev.map((tid) => (tid === tagId ? data.newTagId : tid))
+    );
+
+    // Update global tags list if new tag created
+    if (!tags.find((t) => t.id === data.newTagId)) {
+      setTags([...tags, { id: data.newTagId, name: editingTagName }]);
+    }
+
+    setEditingTagId(null);
+    setEditingTagName("");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to update tag");
+  }
+};
+
 
   // -------------------------------
   // Render JSX
@@ -336,9 +375,22 @@ const Library = () => {
                 {tags
                   .filter(tag => selectedTags.includes(tag.id))
                   .map(tag => (
-                    <li key={tag.id}>{tag.name}</li>
-                  ))}
+                    <li key={tag.id} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    {editingTagId === tag.id ? (
+                    <>
+                    <input value={editingTagName} onChange={(e) => setEditingTagName(e.target.value)}/>
+                    <button onClick={() => saveEditTag(tag.id)}>Save</button>
+                    <button onClick={() => setEditingTagId(null)}>Cancel</button>
+                    </>
+                  ) : (
+                  <>
+                    <span>{tag.name}</span>
+                    <button onClick={() => startEditTag(tag)}>Edit</button>
+                  </>
+                )}
+                 </li>))}
               </ul>
+
             ) : (
               <p>No tags applied yet.</p>
             )}

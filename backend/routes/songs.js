@@ -170,6 +170,49 @@ router.post("/:songId/tags", (req, res) => {
   );
 });
 
+//---------------
+//Edit Tag
+//----------------
+router.put("/:songId/tags/:tagId", (req, res) => {
+  const { songId, tagId } = req.params;
+  const { name } = req.body;
+
+  if (!name || !name.trim()) return res.status(400).json({ error: "Tag name cannot be empty" });
+
+  // Check if a tag with this name already exists
+  db.query("SELECT id FROM tags WHERE name = ?", [name], (err, rows) => {
+    if (err) return res.status(500).json({ error: "Database error" });
+
+    if (rows.length > 0) {
+      // Tag already exists → just update association
+      const existingTagId = rows[0].id;
+      db.query(
+        "UPDATE song_tags SET tag_id = ? WHERE song_id = ? AND tag_id = ?",
+        [existingTagId, songId, tagId],
+        (err2) => {
+          if (err2) return res.status(500).json({ error: "Failed to update tag" });
+          res.json({ message: "Tag updated", newTagId: existingTagId });
+        }
+      );
+    } else {
+      // Tag doesn't exist → create new tag
+      db.query("INSERT INTO tags (name) VALUES (?)", [name], (err2, result) => {
+        if (err2) return res.status(500).json({ error: "Failed to create tag" });
+        const newTagId = result.insertId;
+
+        // Update song association
+        db.query(
+          "UPDATE song_tags SET tag_id = ? WHERE song_id = ? AND tag_id = ?",
+          [newTagId, songId, tagId],
+          (err3) => {
+            if (err3) return res.status(500).json({ error: "Failed to update song tag" });
+            res.json({ message: "Tag updated", newTagId });
+          }
+        );
+      });
+    }
+  });
+});
 
 //----------------------
 //Fetch Tags on a Song
