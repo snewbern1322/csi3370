@@ -51,7 +51,7 @@ const Login = () => {
     navigate("/"); // redirect to home/library
   };
 
-  const handleRegister = async (e) => {
+   const handleRegister = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.post(BASE_URL, formData);

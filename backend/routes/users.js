@@ -76,28 +76,5 @@ router.delete("/:id", (req, res) => {
   });
 });
 
-// ----------------------------------------------------
-// MOCK LOGIN
-// ----------------------------------------------------
-router.post("/login", async (req, res) => {
-  const { user_id } = req.body;
-
-  if (!user_id)
-    return res.status(400).json({ message: "user_id is required" });
-
-  try {
-    const [rows] = await db
-      .promise()
-      .query("SELECT * FROM users WHERE user_id = ?", [user_id]);
-
-    if (rows.length === 0)
-      return res.status(404).json({ message: "User not found" });
-
-    res.json({ message: "Logged in", user: rows[0] });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
 
 export default router;
